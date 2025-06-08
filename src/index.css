@@ -11,3 +11,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.MuiDrawer-paper {
+  width: 240px;
+}
+
+.main-content {
+  margin-left: 240px;
+  padding: 20px;
+}
