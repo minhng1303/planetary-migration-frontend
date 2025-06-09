@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { Planet, PlanetFactor, EvaluationResult } from '../types/planet';
 
-const API_URL = 'http://localhost:5000/api/planets';
+const API_URL = 'http://localhost:5225/api/Planets';
 
 export const getPlanets = async (): Promise<Planet[]> => {
   const response = await axios.get(API_URL, {
