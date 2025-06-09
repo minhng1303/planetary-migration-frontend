@@ -10,11 +10,11 @@ import { EvaluationPage } from "./pages/Planets/EvaluationPage";
 import { Layout } from "./components/Layout/Layout";
 import AppTheme from "./shared-theme/AppTheme";
 import { PlanetCreate } from "./pages/Planets/PlanetCreate";
-import Dashboard from "./dashboard/Dashboard";
 import { PlanetDetailPage } from "./pages/Planets/PlanetDetail";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import { Toaster } from "react-hot-toast";
 import { FactorPage } from "./pages/Factor/FactorPage";
+import Dashboard from "./pages/Planets/Dashboard";
 
 function App() {
   return (

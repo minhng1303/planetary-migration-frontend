@@ -4,9 +4,9 @@ import type {} from "@mui/x-tree-view/themeAugmentation";
 import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import Header from "./components/Header";
-import MainGrid from "./components/MainGrid";
-import AppTheme from "../shared-theme/AppTheme";
+import Header from "../../dashboard/components/Header";
+import MainGrid from "../../dashboard/components/MainGrid";
+import AppTheme from "../../shared-theme/AppTheme";
 
 export default function Dashboard(props: { disableCustomTheme?: boolean }) {
   return (
