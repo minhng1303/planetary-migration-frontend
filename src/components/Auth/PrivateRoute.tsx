@@ -1,24 +1,28 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
-interface PrivateRouteProps {
-  children: React.ReactNode;
-  roles?: string[];
-}
-
-export const PrivateRoute: React.FC<PrivateRouteProps> = ({
+export default function ProtectedRoute({
   children,
   roles,
-}) => {
-  // const { isAuthenticated, hasRole } = useAuth();
+}: {
+  children: React.ReactNode;
+  roles?: string[];
+}) {
+  const { isAuthenticated, hasRole, loading } = useAuth();
 
-  // if (!isAuthenticated) {
-  return <Navigate to="/login" replace />;
-  // }
+  if (loading) {
+    // You can show a spinner or loading indicator here
+    return <div>Loading...</div>;
+  }
 
-  // if (roles && !roles.some(role => hasRole(role))) {
-  //   return <Navigate to="/" replace />;
-  // }
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (roles && !roles.some((role) => hasRole(role))) {
+    return <Navigate to="/" replace />;
+  }
 
   return <>{children}</>;
-};
+}

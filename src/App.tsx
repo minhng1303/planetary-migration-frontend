@@ -8,55 +8,67 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { LoginPage } from "./pages/Auth/LoginPage";
 import { EvaluationPage } from "./pages/Planets/EvaluationPage";
 import { Layout } from "./components/Layout/Layout";
-import Dashboard from "./dashboard/Dashboard";
-import { PlanetDetailPage } from "./pages/Planets/PlanetDetail";
 import AppTheme from "./shared-theme/AppTheme";
 import { PlanetCreate } from "./pages/Planets/PlanetCreate";
+import Dashboard from "./dashboard/Dashboard";
+import { PlanetDetailPage } from "./pages/Planets/PlanetDetail";
+import PrivateRoute from "./components/Auth/PrivateRoute";
+import { Toaster } from "react-hot-toast";
+import { FactorPage } from "./pages/Factor/FactorPage";
 
 function App() {
   return (
     <Router>
       <AppTheme>
         <AuthProvider>
+          <Toaster position="top-right" reverseOrder={false} />
           <Routes>
             <Route element={<Layout />}>
-              {/* <Route path="/planets" element={
-                        <PrivateRoute>
-                          <PlanetDashboard />
-                        </PrivateRoute>
-                      } /> */}
+              <Route
+                path="/planets"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
 
-              {/* <Route
-              path="/planets/:id"
-              element={
-                <PrivateRoute>
-                  <PlanetDetail />
-                </PrivateRoute>
-              }
-            /> */}
+              <Route
+                path="/planets/:id"
+                element={
+                  <PrivateRoute>
+                    <PlanetDetailPage />
+                  </PrivateRoute>
+                }
+              />
 
-              {/* <Route
+              <Route
                 path="/planets/new"
                 element={
                   <PrivateRoute roles={["SuperAdmin", "PlanetAdmin"]}>
                     <PlanetCreate />
                   </PrivateRoute>
                 }
-              /> */}
+              />
 
-              {/* <Route
+              <Route
                 path="/analytics"
                 element={
                   <PrivateRoute>
                     <EvaluationPage />
                   </PrivateRoute>
                 }
-              /> */}
+              />
 
-              <Route path="/planets" element={<Dashboard />} />
-              <Route path="/planets/:id" element={<PlanetDetailPage />} />
-              <Route path="/planets/new" element={<PlanetCreate />} />
-              <Route path="/analytics" element={<EvaluationPage />} />
+              <Route
+                path="/factors"
+                element={
+                  <PrivateRoute>
+                    <FactorPage />
+                  </PrivateRoute>
+                }
+              />
+
               <Route path="*" element={<Navigate to="/planets" replace />} />
             </Route>
             <Route path="/login" element={<LoginPage />} />

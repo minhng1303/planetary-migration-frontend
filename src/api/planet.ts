@@ -1,4 +1,3 @@
-// src/api/planets.ts
 import axios from 'axios';
 import { Planet, PlanetFactor, EvaluationResult } from '../types/planet';
 

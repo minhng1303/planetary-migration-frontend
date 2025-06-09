@@ -4,6 +4,7 @@ import { Typography, CircularProgress } from "@mui/material";
 import { Planet } from "../../types/planet";
 import { getPlanet } from "../../api/planet";
 import { PlanetCreate } from "./PlanetCreate";
+import toast from "react-hot-toast";
 
 export const PlanetDetailPage: React.FC = () => {
   const { id } = useParams();
@@ -16,7 +17,7 @@ export const PlanetDetailPage: React.FC = () => {
         const data = await getPlanet(Number(id));
         setPlanet(data);
       } catch (error) {
-        console.error("Error fetching planet:", error);
+        toast.error("Error fetching planet:", error);
       } finally {
         setLoading(false);
       }

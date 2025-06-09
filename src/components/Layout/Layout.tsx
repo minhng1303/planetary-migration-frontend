@@ -6,10 +6,22 @@ import AppNavbar from "../../dashboard/components/AppNavbar";
 
 export const Layout: React.FC = () => {
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box display="flex" height="100vh">
       <SideMenu />
-      <AppNavbar />
-      <Outlet />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          flexGrow: 1,
+          height: "100vh",
+          overflow: "auto",
+        }}
+      >
+        <AppNavbar />
+        <Box sx={{ flexGrow: 1, p: 2 }}>
+          <Outlet />
+        </Box>
+      </Box>
     </Box>
   );
 };

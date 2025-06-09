@@ -5,7 +5,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   Cell,
 } from "recharts";
@@ -13,6 +12,7 @@ import { getPlanetsWithStatistic } from "../../api/planet";
 import { Planet } from "../../types/planet";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { Box, LinearProgress, Typography } from "@mui/material";
+import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 
 const DARK_COLORS = [
   "#003f5c",
@@ -46,7 +46,31 @@ export const EvaluationPage: React.FC = () => {
 
   if (loading) return <p>Loading data...</p>;
   if (error) return <p>{error}</p>;
-  if (planets.length === 0) return <p>No planet data found.</p>;
+  if (planets.length === 0)
+    return (
+      <Box
+        sx={{
+          height: "60vh",
+          display: "flex",
+          mx: "auto",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "text.secondary",
+          p: 3,
+          textAlign: "center",
+        }}
+      >
+        <SentimentDissatisfiedIcon sx={{ fontSize: 80, mb: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          No planet data found
+        </Typography>
+        <Typography variant="body1" color="textSecondary">
+          There are currently no planets with evaluation data available. Please
+          check back later or add new planet data.
+        </Typography>
+      </Box>
+    );
 
   // Get all unique factor names
   const allFactorNames = Array.from(
@@ -108,6 +132,10 @@ export const EvaluationPage: React.FC = () => {
           columns={columns}
           loading={loading}
           density="compact"
+          pageSizeOptions={[5]}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 5, page: 0 } },
+          }}
         />
       </Box>
       <Box
@@ -130,8 +158,7 @@ export const EvaluationPage: React.FC = () => {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Legend />
-                <Bar dataKey="value" name={factorName}>
+                <Bar dataKey="value" name={""}>
                   {data.map((_, idx) => (
                     <Cell
                       key={`cell-${idx}`}

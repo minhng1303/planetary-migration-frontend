@@ -1,31 +1,24 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 import { Planet } from "../../types/planet";
 import { deletePlanet, getPlanets } from "../../api/planet";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, Button, IconButton, Tooltip, Typography } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import toast from "react-hot-toast";
 
 export default function CustomizedDataGrid() {
   const [planets, setPlanets] = useState<Planet[]>([]);
   const navigate = useNavigate();
-  const { logout } = useAuth();
 
   useEffect(() => {
     const loadPlanets = async (): Promise<void> => {
-      try {
-        const data: Planet[] = await getPlanets();
-        setPlanets(data);
-      } catch (err: unknown) {
-        if ((err as any)?.response?.status === 401) {
-          logout();
-        }
-      }
+      const data: Planet[] = await getPlanets();
+      setPlanets(data);
     };
     loadPlanets();
-  }, [logout]);
+  }, []);
 
   const columns: GridColDef[] = [
     { field: "name", headerName: "Planet Name", flex: 1, minWidth: 100 },
@@ -53,13 +46,61 @@ export default function CustomizedDataGrid() {
         };
 
         const handleDelete = async () => {
-          if (window.confirm(`Are you sure you want to delete ${name}?`)) {
-            try {
-              await deletePlanet(id);
-              setPlanets((prev) => prev.filter((p) => p.id !== id));
-            } catch {
-              alert("Failed to delete planet.");
-            }
+          const confirmed = await new Promise<boolean>((resolve) => {
+            toast(
+              (t) => (
+                <Box
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                  }}
+                >
+                  <Typography>
+                    Are you sure you want to delete {name}?
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      gap: 1,
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => {
+                        toast.dismiss(t.id);
+                        resolve(true);
+                      }}
+                    >
+                      Yes
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        toast.dismiss(t.id);
+                        resolve(false);
+                      }}
+                    >
+                      No
+                    </Button>
+                  </Box>
+                </Box>
+              ),
+              { duration: Infinity }
+            );
+          });
+
+          if (!confirmed) return;
+
+          try {
+            await deletePlanet(id);
+            setPlanets((prev) => prev.filter((p) => p.id !== id));
+            toast.success(`${name} deleted successfully.`);
+          } catch {
+            toast.error("Failed to delete planet.");
           }
         };
 
