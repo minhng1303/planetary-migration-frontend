@@ -2,15 +2,16 @@ export interface Planet {
     id?: number;
     name: string;
     description: string;
-    factors?: PlanetFactor[];
+    factors: PlanetFactor[];
   }
   
   export interface PlanetFactor {
     id?: number;
     planetId?: number;
     name: string;
-    value: string;
+    value: number;
     weight: number;
+    unit: string;
   }
   
   export interface EvaluationResult {

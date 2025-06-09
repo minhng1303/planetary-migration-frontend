@@ -1,6 +1,6 @@
-import React from 'react';
-import { Typography, Box } from '@mui/material';
-import { useAuth } from '../contexts/AuthContext';
+import React from "react";
+import { Typography, Box } from "@mui/material";
+import { useAuth } from "../contexts/AuthContext";
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -16,5 +16,5 @@ export const HomePage: React.FC = () => {
         </Typography>
       )}
     </Box>
-);
+  );
 };
