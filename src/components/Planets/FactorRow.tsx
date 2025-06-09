@@ -9,11 +9,10 @@ interface FactorRowProps {
   isEditMode: boolean;
   isAddMode: boolean;
   onChange: (index: number, key: keyof PlanetFactor, value: any) => void;
-  onRemove: (index: number) => void;
 }
 
 export const FactorRow: React.FC<FactorRowProps> = React.memo(
-  ({ index, factor, isEditMode, isAddMode, onChange, onRemove }) => {
+  ({ index, factor, isEditMode, isAddMode, onChange }) => {
     return (
       <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
         <Box
@@ -38,6 +37,10 @@ export const FactorRow: React.FC<FactorRowProps> = React.memo(
             value={factor.value}
             onChange={(e) => onChange(index, "value", +e.target.value)}
             required
+            inputProps={{
+              min: 0,
+              max: 100,
+            }}
             sx={{ flex: "1 1 20%" }}
             disabled={!isEditMode && !isAddMode}
           />
@@ -58,14 +61,6 @@ export const FactorRow: React.FC<FactorRowProps> = React.memo(
             sx={{ flex: "1 1 20%" }}
             disabled={!isEditMode && !isAddMode}
           />
-          <IconButton
-            color="error"
-            onClick={() => onRemove(index)}
-            sx={{ alignSelf: "center" }}
-            disabled={!isEditMode && !isAddMode}
-          >
-            <Delete />
-          </IconButton>
         </Box>
       </Paper>
     );

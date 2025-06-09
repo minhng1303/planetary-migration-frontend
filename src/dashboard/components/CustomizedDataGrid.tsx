@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { Planet } from "../../types/planet";
 import { deletePlanet, getPlanets } from "../../api/planet";
-import { Box, Button } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 export default function CustomizedDataGrid() {
   const [planets, setPlanets] = useState<Planet[]>([]);
@@ -42,22 +44,20 @@ export default function CustomizedDataGrid() {
       filterable: false,
       align: "center",
       headerAlign: "center",
-      minWidth: 180,
+      minWidth: 100,
       renderCell: (params) => {
+        const { id, name } = params.row;
+
         const handleView = () => {
-          navigate(`/planets/${params.row.id}`);
+          navigate(`/planets/${id}`);
         };
 
         const handleDelete = async () => {
-          if (
-            window.confirm(
-              `Are you sure you want to delete ${params.row.name}?`
-            )
-          ) {
+          if (window.confirm(`Are you sure you want to delete ${name}?`)) {
             try {
-              await deletePlanet(params.row.id);
-              setPlanets((prev) => prev.filter((p) => p.id !== params.row.id));
-            } catch (err) {
+              await deletePlanet(id);
+              setPlanets((prev) => prev.filter((p) => p.id !== id));
+            } catch {
               alert("Failed to delete planet.");
             }
           }
@@ -68,26 +68,20 @@ export default function CustomizedDataGrid() {
             display="flex"
             gap={1}
             alignItems="center"
-            sx={{ py: 0, height: "100%", justifyContent: "center" }}
+            justifyContent="center"
+            sx={{ height: "100%", py: 0 }}
           >
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={handleView}
-              sx={{ minHeight: "28px", lineHeight: 1, padding: "8px 8px" }}
-            >
-              Details
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              size="small"
-              onClick={handleDelete}
-              sx={{ minHeight: "28px", lineHeight: 1, padding: "2px 8px" }}
-            >
-              Delete
-            </Button>
+            <Tooltip title="View Details">
+              <IconButton size="small" color="primary" onClick={handleView}>
+                <InfoOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Delete Planet">
+              <IconButton size="small" color="error" onClick={handleDelete}>
+                <DeleteOutlineIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           </Box>
         );
       },
@@ -98,6 +92,7 @@ export default function CustomizedDataGrid() {
     <DataGrid
       rows={planets}
       columns={columns}
+      rowHeight={70}
       getRowClassName={(params) =>
         params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
       }

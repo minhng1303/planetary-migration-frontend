@@ -11,10 +11,12 @@ import AnalyticsRoundedIcon from "@mui/icons-material/AnalyticsRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 const mainListItems = [
   { text: "Home", icon: <HomeRoundedIcon />, path: "/planets" },
   { text: "Analytics", icon: <AnalyticsRoundedIcon />, path: "/analytics" },
+  { text: "Add Planet", icon: <AddRoundedIcon />, path: "/planets/new" },
 ];
 
 // TODO

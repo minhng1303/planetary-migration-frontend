@@ -95,11 +95,6 @@ export const PlanetCreate: React.FC<PlanetCreateProps> = ({ planet }) => {
     dispatch({ type: "update", index, key, value });
   };
 
-  const handleAddFactor = () => dispatch({ type: "add" });
-
-  const handleRemoveFactor = (index: number) =>
-    dispatch({ type: "remove", index });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -161,7 +156,6 @@ export const PlanetCreate: React.FC<PlanetCreateProps> = ({ planet }) => {
                 isEditMode={editMode}
                 isAddMode={addMode}
                 onChange={handleFactorChange}
-                onRemove={handleRemoveFactor}
               />
             ))}
           </Box>
