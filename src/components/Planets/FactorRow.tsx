@@ -7,12 +7,13 @@ interface FactorRowProps {
   index: number;
   factor: PlanetFactor;
   isEditMode: boolean;
+  isAddMode: boolean;
   onChange: (index: number, key: keyof PlanetFactor, value: any) => void;
   onRemove: (index: number) => void;
 }
 
 export const FactorRow: React.FC<FactorRowProps> = React.memo(
-  ({ index, factor, isEditMode, onChange, onRemove }) => {
+  ({ index, factor, isEditMode, isAddMode, onChange, onRemove }) => {
     return (
       <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
         <Box
@@ -29,7 +30,7 @@ export const FactorRow: React.FC<FactorRowProps> = React.memo(
             onChange={(e) => onChange(index, "name", e.target.value)}
             required
             sx={{ flex: "1 1 20%" }}
-            disabled={!isEditMode}
+            disabled={!isEditMode && !isAddMode}
           />
           <TextField
             label="Value"
@@ -38,14 +39,14 @@ export const FactorRow: React.FC<FactorRowProps> = React.memo(
             onChange={(e) => onChange(index, "value", +e.target.value)}
             required
             sx={{ flex: "1 1 20%" }}
-            disabled={!isEditMode}
+            disabled={!isEditMode && !isAddMode}
           />
           <TextField
             label="Unit"
             value={factor.unit}
             onChange={(e) => onChange(index, "unit", e.target.value)}
             sx={{ flex: "1 1 20%" }}
-            disabled={!isEditMode}
+            disabled={!isEditMode && !isAddMode}
             required
           />
           <TextField
@@ -55,13 +56,13 @@ export const FactorRow: React.FC<FactorRowProps> = React.memo(
             onChange={(e) => onChange(index, "weight", +e.target.value)}
             required
             sx={{ flex: "1 1 20%" }}
-            disabled={!isEditMode}
+            disabled={!isEditMode && !isAddMode}
           />
           <IconButton
             color="error"
             onClick={() => onRemove(index)}
             sx={{ alignSelf: "center" }}
-            disabled={!isEditMode}
+            disabled={!isEditMode && !isAddMode}
           >
             <Delete />
           </IconButton>

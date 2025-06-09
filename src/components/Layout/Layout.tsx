@@ -7,8 +7,8 @@ import AppNavbar from "../../dashboard/components/AppNavbar";
 export const Layout: React.FC = () => {
   return (
     <Box sx={{ display: "flex" }}>
-      {/* <SideMenu />
-      <AppNavbar /> */}
+      <SideMenu />
+      <AppNavbar />
       <Outlet />
     </Box>
   );

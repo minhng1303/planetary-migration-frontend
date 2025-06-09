@@ -1,7 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import { PrivateRoute } from "./components/Auth/PrivateRoute";
-import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/Auth/LoginPage";
 import { EvaluationPage } from "./pages/Planets/EvaluationPage";
 import { Layout } from "./components/Layout/Layout";
@@ -17,15 +20,6 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route element={<Layout />}>
-              <Route
-                path="/"
-                element={
-                  <PrivateRoute>
-                    <HomePage />
-                  </PrivateRoute>
-                }
-              />
-
               {/* <Route path="/planets" element={
                         <PrivateRoute>
                           <PlanetDashboard />
@@ -50,17 +44,20 @@ function App() {
                 }
               /> */}
 
-              <Route
-                path="/evaluate"
+              {/* <Route
+                path="/analytics"
                 element={
                   <PrivateRoute>
                     <EvaluationPage />
                   </PrivateRoute>
                 }
-              />
+              /> */}
+
               <Route path="/planets" element={<Dashboard />} />
               <Route path="/planets/:id" element={<PlanetDetailPage />} />
               <Route path="/planets/new" element={<PlanetCreate />} />
+              <Route path="/analytics" element={<EvaluationPage />} />
+              <Route path="*" element={<Navigate to="/planets" replace />} />
             </Route>
             <Route path="/login" element={<LoginPage />} />
           </Routes>

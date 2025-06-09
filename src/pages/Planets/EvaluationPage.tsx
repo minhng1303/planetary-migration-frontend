@@ -1,51 +1,149 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Typography, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { evaluatePlanets } from '../../api/planet';
-import { EvaluationResult } from '../../types/planet';
-import { EvaluationResult as EvaluationResultComponent } from '../../components/Planets/EvaluationResult';
+import React, { useState, useEffect } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
+import { getPlanetsWithStatistic } from "../../api/planet";
+import { Planet } from "../../types/planet";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { Box, LinearProgress, Typography } from "@mui/material";
+
+const DARK_COLORS = [
+  "#003f5c",
+  "#2f4b7c",
+  "#665191",
+  "#a05195",
+  "#d45087",
+  "#f95d6a",
+  "#ff7c43",
+  "#ffa600",
+];
 
 export const EvaluationPage: React.FC = () => {
-  const [result, setResult] = useState<EvaluationResult | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [planets, setPlanets] = useState<Planet[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleEvaluate = async () => {
-    setLoading(true);
-    try {
-      const evaluationResult = await evaluatePlanets();
-      setResult(evaluationResult);
-    } catch (err) {
-      setError('Failed to evaluate planets');
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const loadPlanets = async (): Promise<void> => {
+      try {
+        const data: Planet[] = await getPlanetsWithStatistic();
+        setPlanets(data);
+      } catch {
+        setError("Failed to load planets");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPlanets();
+  }, []);
+
+  if (loading) return <p>Loading data...</p>;
+  if (error) return <p>{error}</p>;
+  if (planets.length === 0) return <p>No planet data found.</p>;
+
+  // Get all unique factor names
+  const allFactorNames = Array.from(
+    new Set(planets.flatMap((p) => p.factors.map((f) => f.name)))
+  );
+
+  // For each factor, build chart data: [{ name: planetName, value: ... }, ...]
+  const dataByFactor = allFactorNames.map((factorName) => ({
+    factorName,
+    data: planets.map((planet) => ({
+      name: planet.name,
+      value: planet.factors.find((f) => f.name === factorName)?.value ?? 0,
+    })),
+  }));
+
+  const columns: GridColDef[] = [
+    { field: "name", headerName: "Planet Name", flex: 1, minWidth: 150 },
+    {
+      field: "description",
+      headerName: "Planet Description",
+      flex: 2,
+      minWidth: 200,
+    },
+    {
+      field: "planetScore",
+      headerName: "Evaluation Score",
+      flex: 1,
+      minWidth: 180,
+      sortable: false,
+      filterable: false,
+      renderCell: (params: GridRenderCellParams<any>) => {
+        const value = params.value ?? 0;
+        return (
+          <Box width="100%" display="flex" alignItems="center">
+            <Box flexGrow={1} mr={1}>
+              <LinearProgress
+                variant="determinate"
+                value={value}
+                sx={{ height: 10, borderRadius: 5 }}
+              />
+            </Box>
+            <Typography variant="body2" color="textSecondary">
+              {value}%
+            </Typography>
+          </Box>
+        );
+      },
+    },
+  ];
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>Planet Evaluation</Typography>
-      
-      <Button 
-        variant="contained" 
-        onClick={handleEvaluate}
-        disabled={loading}
-        sx={{ mb: 3 }}
+    <div>
+      <Box sx={{ m: 2 }}>
+        <Typography variant="h5" gutterBottom>
+          Top 3 planets with the highest feasibility rate
+        </Typography>
+        <DataGrid
+          rows={planets}
+          columns={columns}
+          loading={loading}
+          density="compact"
+        />
+      </Box>
+      <Box
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "40px",
+          padding: "20px",
+        }}
       >
-        {loading ? 'Evaluating...' : 'Run Evaluation'}
-      </Button>
-
-      {error && <Typography color="error">{error}</Typography>}
-      {result && <EvaluationResultComponent result={result} />}
-
-      <Button 
-        variant="outlined" 
-        onClick={() => navigate('/planets')}
-        sx={{ mt: 3 }}
-      >
-        Back to Planets
-      </Button>
-    </Box>
+        {dataByFactor.map(({ factorName, data }) => (
+          <div key={factorName} style={{ width: 350, textAlign: "center" }}>
+            <h3>{factorName}</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart
+                data={data}
+                margin={{ top: 20, right: 20, bottom: 20, left: 0 }}
+              >
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" name={factorName}>
+                  {data.map((_, idx) => (
+                    <Cell
+                      key={`cell-${idx}`}
+                      fill={DARK_COLORS[idx % DARK_COLORS.length]}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        ))}
+      </Box>
+    </div>
   );
 };

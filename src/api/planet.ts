@@ -2,7 +2,8 @@
 import axios from 'axios';
 import { Planet, PlanetFactor, EvaluationResult } from '../types/planet';
 
-const API_URL = 'http://localhost:5225/api/Planets';
+const API_URL = 'http://localhost:5225/api/planets';
+const API_GET_PLANET_WITH_STATISTIC = `${API_URL}/get-planet-with-statistic`;
 
 export const getPlanets = async (): Promise<Planet[]> => {
   const response = await axios.get(API_URL, {
@@ -13,6 +14,13 @@ export const getPlanets = async (): Promise<Planet[]> => {
 
 export const getPlanet = async (id: number): Promise<Planet> => {
   const response = await axios.get(`${API_URL}/${id}`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  });
+  return response.data;
+};
+
+export const getPlanetsWithStatistic = async (): Promise<Planet[]> => {
+  const response = await axios.get(`${API_GET_PLANET_WITH_STATISTIC}`, {
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
   });
   return response.data;

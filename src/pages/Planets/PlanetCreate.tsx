@@ -1,17 +1,11 @@
-import React, { useReducer, useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  Paper,
-  IconButton,
-  TextField,
-} from "@mui/material";
-import { Add, Delete } from "@mui/icons-material";
+import React, { useEffect, useReducer, useState } from "react";
+import { Box, Button, Typography, TextField } from "@mui/material";
+import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { createPlanet } from "../../api/planet";
 import { PlanetFactor } from "../../types/planet";
 import { FactorRow } from "../../components/Planets/FactorRow";
+import { getFactors } from "../../api/factor";
 
 interface PlanetCreateProps {
   planet?: {
@@ -19,12 +13,14 @@ interface PlanetCreateProps {
     description: string;
     factors: PlanetFactor[];
   };
+  isAddMode?: boolean;
 }
 
 type FactorAction =
   | { type: "update"; index: number; key: keyof PlanetFactor; value: any }
   | { type: "add" }
-  | { type: "remove"; index: number };
+  | { type: "remove"; index: number }
+  | { type: "init"; payload: PlanetFactor[] };
 
 function factorReducer(
   state: PlanetFactor[],
@@ -41,6 +37,12 @@ function factorReducer(
       return [...state, { name: "", value: 0, unit: "", weight: 1 }];
     case "remove":
       return state.filter((_, idx) => idx !== action.index);
+    case "init":
+      if (!Array.isArray(action.payload)) {
+        console.error("Invalid payload for init:", action.payload);
+        return state;
+      }
+      return action.payload;
     default:
       return state;
   }
@@ -49,14 +51,39 @@ function factorReducer(
 export const PlanetCreate: React.FC<PlanetCreateProps> = ({ planet }) => {
   const [name, setName] = useState<string>(planet?.name || "");
   const [description, setDescription] = useState<string>(planet?.description);
-  const [factors, dispatch] = useReducer(
-    factorReducer,
-    planet?.factors?.length
-      ? planet.factors
-      : [{ name: "", value: 0, unit: "", weight: 1 }]
-  );
+  const [factors, dispatch] = useReducer(factorReducer, []);
+  const [defaultFactors, setDefaultFactors] = useState([]);
+  const [initialized, setInitialized] = useState(false);
 
-  const [isEditMode, setIsEditMode] = useState(!!planet);
+  const [editMode, setEditMode] = useState(!!planet);
+  const [addMode, setAddMode] = useState(true);
+
+  useEffect(() => {
+    const fetchFactor = async () => {
+      try {
+        const data = await getFactors();
+        setDefaultFactors(data);
+      } catch (error) {
+        console.error("Error fetching planet:", error);
+      }
+    };
+
+    fetchFactor(); // ✅ call the function here
+  }, []);
+
+  useEffect(() => {
+    if (!initialized && defaultFactors.length) {
+      const initialFactors = planet?.factors?.length
+        ? planet.factors
+        : defaultFactors;
+
+      dispatch({ type: "init", payload: initialFactors });
+      setInitialized(true);
+    }
+    if (planet) {
+      setAddMode(false);
+    }
+  }, [planet, defaultFactors, initialized]);
 
   const navigate = useNavigate();
 
@@ -87,7 +114,7 @@ export const PlanetCreate: React.FC<PlanetCreateProps> = ({ planet }) => {
   return (
     <Box p={4}>
       <Typography variant="h4" gutterBottom>
-        {isEditMode ? "Edit Planet" : "View Planet"}
+        {editMode ? "Edit Planet" : "Add Planet"}
       </Typography>
 
       <form onSubmit={handleSubmit}>
@@ -107,7 +134,7 @@ export const PlanetCreate: React.FC<PlanetCreateProps> = ({ planet }) => {
               variant="standard"
               required
               placeholder="Enter Name"
-              disabled={!isEditMode} // disabled if not editing
+              disabled={!editMode && !addMode}
             />
             <TextField
               id="filled-multiline-static"
@@ -121,7 +148,7 @@ export const PlanetCreate: React.FC<PlanetCreateProps> = ({ planet }) => {
               margin="normal"
               onChange={(e) => setDescription(e.target.value)}
               required
-              disabled={!isEditMode}
+              disabled={!editMode && !addMode}
               value={description}
             />
           </Box>
@@ -129,32 +156,14 @@ export const PlanetCreate: React.FC<PlanetCreateProps> = ({ planet }) => {
           <Box sx={{ flex: 3 }}>
             {factors.map((factor, index) => (
               <FactorRow
-                key={index}
                 index={index}
                 factor={factor}
-                isEditMode={isEditMode}
+                isEditMode={editMode}
+                isAddMode={addMode}
                 onChange={handleFactorChange}
                 onRemove={handleRemoveFactor}
               />
             ))}
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                mt: 2,
-                flexWrap: "wrap",
-                gap: 2,
-              }}
-            >
-              <Button
-                startIcon={<Add />}
-                onClick={handleAddFactor}
-                disabled={!isEditMode}
-              >
-                Add Factor
-              </Button>
-            </Box>
           </Box>
 
           <Box>
@@ -170,7 +179,7 @@ export const PlanetCreate: React.FC<PlanetCreateProps> = ({ planet }) => {
                 type="submit"
                 variant="contained"
                 color="primary"
-                disabled={!isEditMode}
+                disabled={!editMode && !addMode}
                 sx={{
                   "&.Mui-disabled": {
                     color: "rgba(0, 0, 0, 0.38)",
@@ -180,20 +189,20 @@ export const PlanetCreate: React.FC<PlanetCreateProps> = ({ planet }) => {
               >
                 Save
               </Button>
-              {isEditMode && (
+              {editMode && (
                 <Button
                   variant="outlined"
-                  onClick={() => setIsEditMode(false)}
+                  onClick={() => setEditMode(false)}
                   sx={{ mb: 2 }}
                 >
                   Cancel
                 </Button>
               )}
               {/* Add an Edit button when not in edit mode */}
-              {!isEditMode && (
+              {!editMode && !addMode && (
                 <Button
                   variant="outlined"
-                  onClick={() => setIsEditMode(true)}
+                  onClick={() => setEditMode(true)}
                   sx={{ mb: 2 }}
                 >
                   Edit

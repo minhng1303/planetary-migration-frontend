@@ -1,7 +1,6 @@
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Copyright from "../internals/components/Copyright";
 import CustomizedDataGrid from "./CustomizedDataGrid";
 import HighlightedCard from "./HighlightedCard";
 import StatCard, { StatCardProps } from "./StatCard";
@@ -70,7 +69,6 @@ export default function MainGrid() {
           <CustomizedDataGrid />
         </Grid>
       </Grid>
-      <Copyright sx={{ my: 4 }} />
     </Box>
   );
 }

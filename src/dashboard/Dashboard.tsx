@@ -11,7 +11,7 @@ import AppTheme from "../shared-theme/AppTheme";
 export default function Dashboard(props: { disableCustomTheme?: boolean }) {
   return (
     <AppTheme {...props}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", height: "100%" }}>
         <Box
           component="main"
           sx={(theme) => ({

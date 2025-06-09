@@ -8,8 +8,6 @@ import { Box, Button } from "@mui/material";
 
 export default function CustomizedDataGrid() {
   const [planets, setPlanets] = useState<Planet[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -19,12 +17,9 @@ export default function CustomizedDataGrid() {
         const data: Planet[] = await getPlanets();
         setPlanets(data);
       } catch (err: unknown) {
-        setError("Failed to load planets");
         if ((err as any)?.response?.status === 401) {
           logout();
         }
-      } finally {
-        setLoading(false);
       }
     };
     loadPlanets();
@@ -101,7 +96,6 @@ export default function CustomizedDataGrid() {
 
   return (
     <DataGrid
-      checkboxSelection
       rows={planets}
       columns={columns}
       getRowClassName={(params) =>
